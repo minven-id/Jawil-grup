@@ -8,6 +8,8 @@ Aplikasi berbasis web untuk monitoring dan manajemen inventaris barang/aset deng
   - Login aman dengan password hashing
   - Session management dengan timeout
   - Proteksi halaman berdasarkan login
+  - Permintaan reset password untuk ditinjau admin
+  - Permintaan akun baru untuk ditinjau admin
 
 - **Role-Based Access Control (RBAC)**
   - 4 level role: Super Admin, Admin, Manager, Staff
@@ -43,6 +45,11 @@ Aplikasi berbasis web untuk monitoring dan manajemen inventaris barang/aset deng
   - Aktivitas terbaru
   - Status barang overview
 
+- **Pengaturan Background Login**
+  - Upload background login oleh Admin atau Super Admin
+  - Mendukung format JPG, PNG, WEBP, dan GIF
+  - Ukuran file maksimal 5 MB
+
 ## Teknologi
 
 - **Backend**: PHP 7.4+
@@ -71,7 +78,19 @@ Buka phpMyAdmin (http://localhost/phpmyadmin) dan:
    - Pilih file `database.sql`
    - Klik "Go"
 
-### 2. Konfigurasi
+### 2. Migrasi Database untuk Database Lama
+
+Jika database sudah pernah dibuat sebelum fitur pemulihan password dan permintaan akun ditambahkan, buka:
+
+```text
+http://localhost/jawil_grup/migrate_add_account_recovery.php
+```
+
+Alternatifnya, import file `migrate_add_account_recovery.sql` melalui phpMyAdmin. Jalankan migrasi tersebut satu kali setelah MySQL aktif. Database baru yang di-import dari `database.sql` sudah memiliki tabel yang diperlukan.
+
+Untuk mengaktifkan fitur Dokumen pada database lama, buka `http://localhost/jawil_grup/migrate_add_documents.php` satu kali setelah login database tersedia. Migrasi ini membuat tabel dokumen dan menambahkan permission dokumen untuk Admin, Super Admin, dan Staff.
+
+### 3. Konfigurasi
 
 File konfigurasi sudah diset dengan default:
 - Database Host: localhost
@@ -88,7 +107,7 @@ define('DB_PASS', '');
 define('DB_NAME', 'jawil_grup');
 ```
 
-### 3. Akses Aplikasi
+### 4. Akses Aplikasi
 
 Buka browser dan akses:
 ```
@@ -110,12 +129,16 @@ Setelah instalasi, gunakan akun default untuk login:
 - `users.manage` - Kelola pengguna
 - `items.manage` - Kelola barang (CRUD)
 - `categories.manage` - Kelola kategori
+- `documents.manage` - Upload dokumen
+- `documents.view` - Lihat dan download dokumen
 - `logs.view` - Lihat log aktivitas
 - `settings.manage` - Pengaturan sistem
 
 ### Admin
 - `items.manage` - Kelola barang (CRUD)
 - `categories.manage` - Kelola kategori
+- `documents.manage` - Upload dokumen
+- `documents.view` - Lihat dan download dokumen
 - `logs.view` - Lihat log aktivitas
 
 ### Manager
@@ -125,6 +148,7 @@ Setelah instalasi, gunakan akun default untuk login:
 
 ### Staff
 - `items.view` - Lihat barang saja
+- `documents.view` - Baca judul/deskripsi dan download dokumen
 
 ## Struktur Direktori
 
@@ -135,16 +159,21 @@ jawil_grup/
 ├── login.php               # Halaman login
 ├── logout.php              # Logout handler
 ├── dashboard.php           # Dashboard utama
+├── login_background.php    # Upload background halaman login
+├── document_download.php   # Endpoint download dokumen terproteksi
+├── migrate_add_documents.php # Migrasi fitur dokumen
 ├── items.php               # Manajemen barang
 ├── categories.php          # Manajemen kategori
 ├── users.php               # Manajemen pengguna
+├── password_requests.php   # Persetujuan reset password
 ├── logs.php                # Log aktivitas
 ├── includes/
 │   ├── db.php             # Database connection class
 │   ├── auth.php           # Authentication & authorization
 │   ├── header.php         # Header & sidebar
 │   └── footer.php         # Footer & scripts
-├── uploads/                # Directory upload gambar
+├── uploads/                # Directory upload gambar dan dokumen
+│   └── documents/          # File dokumen (akses melalui endpoint download)
 └── README.md              # Dokumentasi ini
 ```
 
@@ -190,6 +219,22 @@ jawil_grup/
 3. Klik "Tambah Pengguna"
 4. Isi data pengguna dan pilih role
 5. Klik "Simpan"
+
+### Menyetujui Reset Password
+
+1. Pengguna membuka "Lupa Password?" dari halaman login
+2. Pengguna mengisi kode pegawai, email terdaftar, dan password baru
+3. Login sebagai Admin atau Super Admin
+4. Buka menu "Reset Password"
+5. Pilih "Setujui & Terapkan" atau tolak permintaan
+
+### Mengganti Background Login
+
+1. Login sebagai Admin atau Super Admin
+2. Buka menu "Background Login"
+3. Pilih gambar JPG, PNG, WEBP, atau GIF maksimal 5 MB
+4. Klik "Simpan Background"
+5. Buka halaman login atau lakukan refresh paksa dengan `Ctrl + F5`
 
 ### Melihat Log Aktivitas
 

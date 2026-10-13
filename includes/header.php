@@ -290,7 +290,7 @@ $user = $auth->getCurrentUser();
         <aside id="desktopSidebar" class="w-64 bg-white shadow-lg flex-shrink-0 hidden md:block">
             <div class="p-6 border-b">
                 <div class="flex items-center space-x-3" title="Jawil Group">
-                    <img src="includes/logo%20jawil.jpg" alt="Jawil Group" class="sidebar-brand-logo">
+                    <img src="includes/jawil-logo-transparent.png" alt="Jawil Group" class="sidebar-brand-logo">
                 </div>
             </div>
 
@@ -304,6 +304,13 @@ $user = $auth->getCurrentUser();
                     <span><?php echo $menu['menu_label']; ?></span>
                 </a>
                 <?php endforeach; ?>
+
+                <?php if ($auth->hasPermission('settings.manage') || $auth->hasPermission('users.manage')): ?>
+                <a href="login_background.php" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 transition <?php echo basename($_SERVER['PHP_SELF']) === 'login_background.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-image w-5"></i>
+                    <span>Background Login</span>
+                </a>
+                <?php endif; ?>
             </nav>
             
             <div class="absolute bottom-0 w-64 p-4 border-t bg-white">

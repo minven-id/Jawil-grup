@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Sep 12, 2026 at 05:29 PM
+-- Generation Time: Sep 12, 2026 at 06:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -20,6 +20,33 @@ SET time_zone = "+00:00";
 --
 -- Database: `jawil_grup`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account_requests`
+--
+
+CREATE TABLE `account_requests` (
+  `id` int(11) NOT NULL,
+  `employee_id` varchar(50) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `department` varchar(100) DEFAULT NULL,
+  `reason` varchar(500) DEFAULT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `admin_note` varchar(500) DEFAULT NULL,
+  `reviewed_by` int(11) DEFAULT NULL,
+  `reviewed_at` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `account_requests`
+--
+
+INSERT INTO `account_requests` (`id`, `employee_id`, `full_name`, `email`, `department`, `reason`, `status`, `admin_note`, `reviewed_by`, `reviewed_at`, `created_at`) VALUES
+(1, '120926', 'manjiro', 'manjiro@gmail.com', 'staff', NULL, 'pending', NULL, NULL, NULL, '2026-09-12 16:11:13');
 
 -- --------------------------------------------------------
 
@@ -108,7 +135,17 @@ INSERT INTO `activity_logs` (`id`, `user_id`, `action`, `table_name`, `record_id
 (61, 2, 'created', 'item_requests', 4, NULL, '{\"request_no\":\"PBJ\\/2026\\/09\\/0004\",\"request_date\":\"2026-09-12\",\"requester_name\":\"sano\",\"employee_id\":\"171297\",\"department\":\"\",\"purpose\":\"\",\"item_details\":\"[{\\\"name\\\":\\\"mesin kopi\\\",\\\"qty\\\":1,\\\"unit\\\":\\\"pcs\\\",\\\"price\\\":3000000,\\\"note\\\":\\\"\\\",\\\"subtotal\\\":3000000}]\",\"total_items\":1,\"total_amount\":3000000,\"status\":\"pending\",\"photo_bon\":null,\"created_by\":2}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 15:21:08'),
 (62, 2, 'approved', 'item_requests', 4, '{\"id\":4,\"request_no\":\"PBJ\\/2026\\/09\\/0004\",\"request_date\":\"2026-09-12\",\"requester_name\":\"sano\",\"employee_id\":\"171297\",\"department\":\"\",\"purpose\":\"\",\"item_details\":\"[{\\\"name\\\":\\\"mesin kopi\\\",\\\"qty\\\":1,\\\"unit\\\":\\\"pcs\\\",\\\"price\\\":3000000,\\\"note\\\":\\\"\\\",\\\"subtotal\\\":3000000}]\",\"total_items\":1,\"total_amount\":\"3000000.00\",\"status\":\"pending\",\"admin_note\":null,\"approved_by\":null,\"approved_at\":null,\"rejected_by\":null,\"rejected_at\":null,\"photo_bon\":null,\"created_by\":2,\"created_at\":\"2026-09-12 22:21:08\",\"updated_at\":\"2026-09-12 22:21:08\"}', '{\"status\":\"approved\",\"note\":\"\"}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 15:21:12'),
 (63, 2, 'processing', 'item_requests', 4, '{\"id\":4,\"request_no\":\"PBJ\\/2026\\/09\\/0004\",\"request_date\":\"2026-09-12\",\"requester_name\":\"sano\",\"employee_id\":\"171297\",\"department\":\"\",\"purpose\":\"\",\"item_details\":\"[{\\\"name\\\":\\\"mesin kopi\\\",\\\"qty\\\":1,\\\"unit\\\":\\\"pcs\\\",\\\"price\\\":3000000,\\\"note\\\":\\\"\\\",\\\"subtotal\\\":3000000}]\",\"total_items\":1,\"total_amount\":\"3000000.00\",\"status\":\"approved\",\"admin_note\":\"\",\"approved_by\":2,\"approved_at\":\"2026-09-12 22:21:12\",\"rejected_by\":null,\"rejected_at\":null,\"photo_bon\":null,\"created_by\":2,\"created_at\":\"2026-09-12 22:21:08\",\"updated_at\":\"2026-09-12 22:21:12\"}', '{\"status\":\"processing\"}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 15:21:15'),
-(64, 2, 'barang_tiba', 'item_requests', 4, '{\"id\":4,\"request_no\":\"PBJ\\/2026\\/09\\/0004\",\"request_date\":\"2026-09-12\",\"requester_name\":\"sano\",\"employee_id\":\"171297\",\"department\":\"\",\"purpose\":\"\",\"item_details\":\"[{\\\"name\\\":\\\"mesin kopi\\\",\\\"qty\\\":1,\\\"unit\\\":\\\"pcs\\\",\\\"price\\\":3000000,\\\"note\\\":\\\"\\\",\\\"subtotal\\\":3000000}]\",\"total_items\":1,\"total_amount\":\"3000000.00\",\"status\":\"processing\",\"admin_note\":\"\",\"approved_by\":2,\"approved_at\":\"2026-09-12 22:21:12\",\"rejected_by\":null,\"rejected_at\":null,\"photo_bon\":null,\"created_by\":2,\"created_at\":\"2026-09-12 22:21:08\",\"updated_at\":\"2026-09-12 22:21:15\"}', '{\"status\":\"barang_tiba\"}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 15:21:17');
+(64, 2, 'barang_tiba', 'item_requests', 4, '{\"id\":4,\"request_no\":\"PBJ\\/2026\\/09\\/0004\",\"request_date\":\"2026-09-12\",\"requester_name\":\"sano\",\"employee_id\":\"171297\",\"department\":\"\",\"purpose\":\"\",\"item_details\":\"[{\\\"name\\\":\\\"mesin kopi\\\",\\\"qty\\\":1,\\\"unit\\\":\\\"pcs\\\",\\\"price\\\":3000000,\\\"note\\\":\\\"\\\",\\\"subtotal\\\":3000000}]\",\"total_items\":1,\"total_amount\":\"3000000.00\",\"status\":\"processing\",\"admin_note\":\"\",\"approved_by\":2,\"approved_at\":\"2026-09-12 22:21:12\",\"rejected_by\":null,\"rejected_at\":null,\"photo_bon\":null,\"created_by\":2,\"created_at\":\"2026-09-12 22:21:08\",\"updated_at\":\"2026-09-12 22:21:15\"}', '{\"status\":\"barang_tiba\"}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 15:21:17'),
+(65, 2, 'logout', 'users', 2, NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 15:45:54'),
+(66, 2, 'login', 'users', 2, NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 15:58:43'),
+(67, 2, 'created', 'users', 3, NULL, '{\"employee_id\":\"111117\",\"username\":\"staff\",\"email\":\"Staff@minven.com\",\"password\":\"$2y$10$cxUirv5pPuNRZKCbGrFR0.xgdwPaN4QfZrCfkbg73P3UxSTPQUaRO\",\"full_name\":\"AkagamiSans\",\"profile_photo\":null,\"role_id\":4,\"is_active\":1}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 15:59:49'),
+(68, 2, 'logout', 'users', 2, NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 15:59:54'),
+(69, 3, 'login', 'users', 3, NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 16:00:00'),
+(70, 3, 'logout', 'users', 3, NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 16:00:20'),
+(71, 2, 'login', 'users', 2, NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 16:00:32'),
+(72, 2, 'updated', 'roles', 4, '{\"id\":4,\"role_name\":\"Staff\",\"description\":\"Can view items and locations only\",\"permissions\":\"[\\\"items.view\\\",\\\"locations.view\\\",\\\"finance.view\\\"]\",\"created_at\":\"2026-09-11 09:42:12\"}', '{\"role_name\":\"Staff\",\"description\":\"Can view items and locations only\",\"permissions\":\"[\\\"items.view\\\",\\\"locations.view\\\"]\"}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 16:01:08'),
+(73, 2, 'logout', 'users', 2, NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 16:07:04'),
+(74, 2, 'login', 'users', 2, NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-12 16:11:28');
 
 -- --------------------------------------------------------
 
@@ -324,7 +361,47 @@ INSERT INTO `menus` (`id`, `menu_name`, `menu_label`, `menu_icon`, `menu_url`, `
 (17, 'item_requests', 'Pengajuan Barang', 'fa-file-alt', 'item_requests.php', 3, 1, '2026-09-11 03:17:53'),
 (18, 'finished_goods', 'Monitoring Barang', 'fa-clipboard-list', 'finished_goods.php', 4, 1, '2026-09-11 07:55:26'),
 (19, 'stock_out', 'Stok Keluar', 'fa-sign-out-alt', 'stock_out.php', 5, 1, '2026-09-11 18:25:56'),
-(20, 'finance', 'Finance', 'fa-wallet', 'finance.php', 6, 1, '2026-09-11 18:52:25');
+(20, 'finance', 'Finance', 'fa-wallet', 'finance.php', 6, 1, '2026-09-11 18:52:25'),
+(21, 'password_requests', 'Reset Password', 'fa-key', 'password_requests.php', 12, 1, '2026-09-13 00:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `password_resets`
+--
+
+CREATE TABLE `password_resets` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `token_hash` char(64) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used_at` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `password_resets`
+--
+
+INSERT INTO `password_resets` (`id`, `user_id`, `token_hash`, `expires_at`, `used_at`, `created_at`) VALUES
+(1, 3, 'f8043a5e54180bb7f9a70f9c31512035b3551ff2a6842df49b6a11ce5b232ce0', '2026-09-13 00:10:21', NULL, '2026-09-12 16:10:21');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `password_reset_requests`
+--
+
+CREATE TABLE `password_reset_requests` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `requested_password_hash` varchar(255) DEFAULT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `admin_note` varchar(500) DEFAULT NULL,
+  `reviewed_by` int(11) DEFAULT NULL,
+  `reviewed_at` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -345,10 +422,10 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `role_name`, `description`, `permissions`, `created_at`) VALUES
-(1, 'Super Admin', 'Full access to all features including roles management', '[\"users.manage\",\"items.manage\",\"items.view\",\"items.edit\",\"categories.manage\",\"categories.view\",\"categories.edit\",\"locations.manage\",\"locations.view\",\"roles.manage\",\"logs.view\",\"settings.manage\",\"finance.view\",\"finance.manage\"]', '2026-09-11 02:42:12'),
-(2, 'Admin', 'Full access to manage items, categories, locations and users', '[\"users.manage\",\"items.manage\",\"categories.manage\",\"locations.manage\",\"logs.view\",\"finance.view\",\"finance.manage\"]', '2026-09-11 02:42:12'),
+(1, 'Super Admin', 'Full access to all features including roles management', '[\"users.manage\",\"items.manage\",\"items.view\",\"items.edit\",\"categories.manage\",\"categories.view\",\"categories.edit\",\"locations.manage\",\"locations.view\",\"roles.manage\",\"logs.view\",\"settings.manage\",\"finance.view\",\"finance.manage\",\"documents.view\",\"documents.manage\"]', '2026-09-11 02:42:12'),
+(2, 'Admin', 'Full access to manage items, categories, locations and users', '[\"users.manage\",\"items.manage\",\"categories.manage\",\"locations.manage\",\"logs.view\",\"finance.view\",\"finance.manage\",\"documents.view\",\"documents.manage\"]', '2026-09-11 02:42:12'),
 (3, 'Manager', 'Can view and edit items and categories', '[\"items.view\",\"items.edit\",\"categories.view\",\"categories.edit\",\"locations.view\",\"finance.view\"]', '2026-09-11 02:42:12'),
-(4, 'Staff', 'Can view items and locations only', '[\"items.view\",\"locations.view\",\"finance.view\"]', '2026-09-11 02:42:12');
+(4, 'Staff', 'Can view items and locations only', '[\"items.view\",\"locations.view\",\"documents.view\"]', '2026-09-11 02:42:12');
 
 -- --------------------------------------------------------
 
@@ -379,15 +456,10 @@ INSERT INTO `role_menu_access` (`id`, `role_id`, `menu_id`, `can_view`, `created
 (16, 3, 1, 1, '2026-09-11 02:42:12'),
 (17, 3, 2, 1, '2026-09-11 02:42:12'),
 (18, 3, 4, 1, '2026-09-11 02:42:12'),
-(22, 4, 1, 1, '2026-09-11 02:42:12'),
-(23, 4, 2, 1, '2026-09-11 02:42:12'),
-(24, 4, 4, 1, '2026-09-11 02:42:12'),
 (37, 2, 17, 1, '2026-09-11 03:17:53'),
 (38, 3, 17, 1, '2026-09-11 03:17:53'),
-(39, 4, 17, 1, '2026-09-11 03:17:53'),
 (75, 2, 18, 1, '2026-09-11 07:55:26'),
 (76, 3, 18, 1, '2026-09-11 07:55:26'),
-(77, 4, 18, 1, '2026-09-11 07:55:26'),
 (78, 1, 1, 1, '2026-09-11 07:55:50'),
 (79, 1, 2, 1, '2026-09-11 07:55:50'),
 (80, 1, 17, 1, '2026-09-11 07:55:50'),
@@ -399,12 +471,19 @@ INSERT INTO `role_menu_access` (`id`, `role_id`, `menu_id`, `can_view`, `created
 (86, 1, 7, 1, '2026-09-11 07:55:50'),
 (87, 2, 19, 1, '2026-09-11 18:25:56'),
 (88, 3, 19, 1, '2026-09-11 18:25:56'),
-(89, 4, 19, 1, '2026-09-11 18:25:56'),
 (90, 1, 19, 1, '2026-09-11 18:25:56'),
 (91, 1, 20, 1, '2026-09-11 18:52:25'),
 (92, 2, 20, 1, '2026-09-11 18:52:25'),
 (93, 3, 20, 1, '2026-09-11 18:52:25'),
-(94, 4, 20, 1, '2026-09-11 18:52:25');
+(99, 4, 1, 1, '2026-09-12 16:01:08'),
+(100, 4, 2, 1, '2026-09-12 16:01:08'),
+(101, 4, 17, 1, '2026-09-12 16:01:08'),
+(102, 4, 18, 1, '2026-09-12 16:01:08'),
+(103, 4, 19, 1, '2026-09-12 16:01:08'),
+(104, 4, 3, 1, '2026-09-12 16:01:08'),
+(105, 4, 4, 1, '2026-09-12 16:01:08'),
+(106, 1, 21, 1, '2026-09-13 00:00:00'),
+(107, 2, 21, 1, '2026-09-13 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -458,11 +537,39 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `employee_id`, `username`, `email`, `password`, `full_name`, `profile_photo`, `role_id`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, '100926', 'admin', 'admin@jawilgrup.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrator', NULL, 1, 1, '2026-09-11 02:42:12', '2026-09-12 14:59:26'),
-(2, '171297', 'sano', 'akagamisans2@gmail.com', '$2y$10$x5W9Snk.hT4v86GcGIYWROSBuGYGGU2JBBK13dnwWHIrhTZ.UszaC', 'sano', 'bd5c63586b187181654276cef37d6485.jpg', 1, 1, '2026-09-11 07:38:55', '2026-09-12 14:42:06');
+(2, '171297', 'sano', 'akagamisans2@gmail.com', '$2y$10$x5W9Snk.hT4v86GcGIYWROSBuGYGGU2JBBK13dnwWHIrhTZ.UszaC', 'sano', 'bd5c63586b187181654276cef37d6485.jpg', 1, 1, '2026-09-11 07:38:55', '2026-09-12 14:42:06'),
+(3, '111117', 'staff', 'Staff@minven.com', '$2y$10$cxUirv5pPuNRZKCbGrFR0.xgdwPaN4QfZrCfkbg73P3UxSTPQUaRO', 'AkagamiSans', NULL, 4, 1, '2026-09-12 15:59:49', '2026-09-12 15:59:49');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `documents`
+--
+
+CREATE TABLE `documents` (
+  `id` int(11) NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `description` text DEFAULT NULL,
+  `original_filename` varchar(255) NOT NULL,
+  `stored_filename` varchar(255) NOT NULL,
+  `mime_type` varchar(100) NOT NULL,
+  `file_size` int(10) unsigned NOT NULL,
+  `uploaded_by` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `account_requests`
+--
+ALTER TABLE `account_requests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `account_requests_status` (`status`),
+  ADD KEY `account_requests_employee_id` (`employee_id`),
+  ADD KEY `account_requests_reviewer` (`reviewed_by`);
 
 --
 -- Indexes for table `activity_logs`
@@ -523,6 +630,23 @@ ALTER TABLE `menus`
   ADD UNIQUE KEY `menu_name` (`menu_name`);
 
 --
+-- Indexes for table `password_resets`
+--
+ALTER TABLE `password_resets`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `token_hash` (`token_hash`),
+  ADD KEY `password_resets_user_id` (`user_id`);
+
+--
+-- Indexes for table `password_reset_requests`
+--
+ALTER TABLE `password_reset_requests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `password_reset_requests_user_id` (`user_id`),
+  ADD KEY `password_reset_requests_status` (`status`),
+  ADD KEY `password_reset_requests_reviewer` (`reviewed_by`);
+
+--
 -- Indexes for table `roles`
 --
 ALTER TABLE `roles`
@@ -556,14 +680,28 @@ ALTER TABLE `users`
   ADD KEY `role_id` (`role_id`);
 
 --
+-- Indexes for table `documents`
+--
+ALTER TABLE `documents`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `stored_filename` (`stored_filename`),
+  ADD KEY `uploaded_by` (`uploaded_by`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `account_requests`
+--
+ALTER TABLE `account_requests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -602,6 +740,18 @@ ALTER TABLE `menus`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
+-- AUTO_INCREMENT for table `password_resets`
+--
+ALTER TABLE `password_resets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `password_reset_requests`
+--
+ALTER TABLE `password_reset_requests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
@@ -611,7 +761,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `role_menu_access`
 --
 ALTER TABLE `role_menu_access`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
 
 --
 -- AUTO_INCREMENT for table `stock_out`
@@ -623,7 +773,13 @@ ALTER TABLE `stock_out`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `documents`
+--
+ALTER TABLE `documents`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -656,6 +812,13 @@ ALTER TABLE `items`
   ADD CONSTRAINT `items_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);
 
 --
+-- Constraints for table `password_reset_requests`
+--
+ALTER TABLE `password_reset_requests`
+  ADD CONSTRAINT `password_reset_requests_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `password_reset_requests_reviewer_fk` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
 -- Constraints for table `role_menu_access`
 --
 ALTER TABLE `role_menu_access`
@@ -674,6 +837,12 @@ ALTER TABLE `stock_out`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
+
+--
+-- Constraints for table `documents`
+--
+ALTER TABLE `documents`
+  ADD CONSTRAINT `documents_ibfk_1` FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

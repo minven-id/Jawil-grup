@@ -53,6 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fullName = trim($_POST['full_name']);
         $roleId = intval($_POST['role_id']);
 
+        // Validate employee_id first
+        if ($employeeId === '') {
+            $_SESSION['error'] = 'No. Pegawai wajib diisi';
+            header('Location: users.php');
+            exit;
+        }
+
         try {
             $profilePhoto = uploadProfilePhoto();
         } catch (Exception $e) {
@@ -63,29 +70,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $existing = $db->fetchOne("SELECT id FROM users WHERE employee_id = ? OR username = ? OR email = ?", [$employeeId, $username, $email]);
 
-        if ($employeeId === '') {
-            $_SESSION['error'] = 'No. Pegawai wajib diisi';
-        } elseif ($existing) {
+        if ($existing) {
             $_SESSION['error'] = 'No. Pegawai, username, atau email sudah digunakan';
-        } else {
-            $data = [
-                'employee_id' => $employeeId,
-                'username' => $username,
-                'email' => $email,
-                'password' => password_hash($password, PASSWORD_DEFAULT),
-                'full_name' => $fullName,
-                'profile_photo' => $profilePhoto,
-                'role_id' => $roleId,
-                'is_active' => 1
-            ];
+            header('Location: users.php');
+            exit;
+        }
 
-            try {
-                $userId = $db->insert('users', $data);
-                $auth->logActivity('created', 'users', $userId, null, $data);
-                $_SESSION['success'] = 'Pengguna berhasil ditambahkan';
-            } catch (Exception $e) {
-                $_SESSION['error'] = 'Gagal menambahkan pengguna: ' . $e->getMessage();
-            }
+        $data = [
+            'employee_id' => $employeeId,
+            'username' => $username,
+            'email' => $email,
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'full_name' => $fullName,
+            'profile_photo' => $profilePhoto,
+            'role_id' => $roleId,
+            'is_active' => 1
+        ];
+
+        try {
+            $userId = $db->insert('users', $data);
+            $auth->logActivity('created', 'users', $userId, null, $data);
+            $_SESSION['success'] = 'Pengguna berhasil ditambahkan';
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Gagal menambahkan pengguna: ' . $e->getMessage();
         }
 
         header('Location: users.php');
@@ -99,12 +106,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newEmployeeId = trim($_POST['employee_id'] ?? '');
         $newUsername = trim($_POST['username']);
         $newEmail = trim($_POST['email']);
-        $existing = $db->fetchOne("SELECT id FROM users WHERE (employee_id = ? OR username = ? OR email = ?) AND id != ?", [$newEmployeeId, $newUsername, $newEmail, $userId]);
+        
+        // Validate employee_id first
         if ($newEmployeeId === '') {
             $_SESSION['error'] = 'No. Pegawai wajib diisi.';
             header('Location: users.php?edit=' . $userId);
             exit;
         }
+        
+        // Check for existing records
+        $existing = $db->fetchOne("SELECT id FROM users WHERE (employee_id = ? OR username = ? OR email = ?) AND id != ?", [$newEmployeeId, $newUsername, $newEmail, $userId]);
         if ($existing) {
             $_SESSION['error'] = "No. Pegawai, username, atau email sudah digunakan akun lain.";
             header('Location: users.php');
@@ -235,10 +246,18 @@ if (isset($_GET['edit'])) {
         <h2 class="text-2xl font-bold text-gray-800">Manajemen Pengguna</h2>
         <p class="text-gray-600">Kelola pengguna dan hak akses</p>
     </div>
-    <button onclick="openModal('addModal')" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition">
-        <i class="fas fa-plus mr-2"></i>
-        Tambah Pengguna
-    </button>
+    <div class="flex flex-wrap gap-2">
+        <a href="account_requests.php" class="rounded-lg border border-purple-200 bg-purple-50 px-5 py-2 font-semibold text-purple-700 transition hover:bg-purple-100">
+            <i class="fas fa-user-clock mr-2"></i>Permintaan Akun
+        </a>
+        <a href="password_requests.php" class="rounded-lg border border-purple-200 bg-purple-50 px-5 py-2 font-semibold text-purple-700 transition hover:bg-purple-100">
+            <i class="fas fa-key mr-2"></i>Reset Password
+        </a>
+        <button onclick="openModal('addModal')" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition">
+            <i class="fas fa-plus mr-2"></i>
+            Tambah Pengguna
+        </button>
+    </div>
 </div>
 
 <!-- Filters -->

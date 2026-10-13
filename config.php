@@ -12,6 +12,12 @@ define('APP_NAME', 'Jawil Grup');
 define('APP_URL', 'http://localhost/jawil_grup');
 define('SESSION_NAME', 'jawil_grup_session');
 
+// Password recovery email settings. Configure SMTP/PHP mail on production.
+define('PASSWORD_RESET_FROM', 'no-reply@jawilgrup.com');
+define('PASSWORD_RESET_EXPIRY', 3600); // 1 hour
+// Keep true only for local XAMPP development without an SMTP service.
+define('SHOW_RESET_LINK_ON_MAIL_FAILURE', true);
+
 // Security
 define('HASH_ALGO', PASSWORD_DEFAULT);
 define('SESSION_LIFETIME', 3600); // 1 hour
@@ -20,6 +26,8 @@ define('SESSION_LIFETIME', 3600); // 1 hour
 define('UPLOAD_DIR', 'uploads/');
 define('MAX_FILE_SIZE', 5242880); // 5MB in bytes
 define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'gif']);
+define('DOCUMENT_MAX_FILE_SIZE', 10485760); // 10MB in bytes
+define('DOCUMENT_ALLOWED_EXTENSIONS', ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv', 'zip', 'jpg', 'jpeg', 'png']);
 
 // Pagination
 define('ITEMS_PER_PAGE', 10);

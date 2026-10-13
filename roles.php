@@ -23,7 +23,9 @@ $availablePermissions = [
     'logs.view' => 'Lihat Log Aktivitas',
     'settings.manage' => 'Pengaturan Sistem',
     'finance.view' => 'Lihat Finance',
-    'finance.manage' => 'Kelola Finance'
+    'finance.manage' => 'Kelola Finance',
+    'documents.view' => 'Lihat Dokumen',
+    'documents.manage' => 'Kelola Dokumen'
 ];
 
 // Handle form submissions
@@ -41,6 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get selected menus
         $selectedMenus = $_POST['menus'] ?? [];
 
+        // Validate that at least one menu is selected
+        if (empty($selectedMenus)) {
+            $_SESSION['error'] = 'Role harus memiliki minimal satu akses menu';
+            header('Location: roles.php');
+            exit;
+        }
+
         $data = [
             'role_name' => $roleName,
             'description' => $description,
@@ -50,13 +59,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $roleId = $db->insert('roles', $data);
 
-            // Insert menu access
-            foreach ($selectedMenus as $menuId) {
-                $db->insert('role_menu_access', [
-                    'role_id' => $roleId,
-                    'menu_id' => intval($menuId),
-                    'can_view' => 1
-                ]);
+            // Insert menu access with error handling
+            try {
+                foreach ($selectedMenus as $menuId) {
+                    $db->insert('role_menu_access', [
+                        'role_id' => $roleId,
+                        'menu_id' => intval($menuId),
+                        'can_view' => 1
+                    ]);
+                }
+            } catch (Exception $e) {
+                // Table might not exist yet, continue silently
             }
 
             $auth->logActivity('created', 'roles', $roleId, null, $data);
@@ -83,6 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get selected menus
         $selectedMenus = $_POST['menus'] ?? [];
 
+        // Validate that at least one menu is selected
+        if (empty($selectedMenus)) {
+            $_SESSION['error'] = 'Role harus memiliki minimal satu akses menu';
+            header('Location: roles.php?edit=' . $roleId);
+            exit;
+        }
+
         $data = [
             'role_name' => $roleName,
             'description' => $description,
@@ -92,16 +112,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $db->update('roles', $data, 'id = ?', [$roleId]);
 
-            // Delete old menu access
-            $db->delete('role_menu_access', 'role_id = ?', [$roleId]);
+            // Delete old menu access with error handling
+            try {
+                $db->delete('role_menu_access', 'role_id = ?', [$roleId]);
+            } catch (Exception $e) {
+                // Table might not exist yet, continue
+            }
 
-            // Insert new menu access
-            foreach ($selectedMenus as $menuId) {
-                $db->insert('role_menu_access', [
-                    'role_id' => $roleId,
-                    'menu_id' => intval($menuId),
-                    'can_view' => 1
-                ]);
+            // Insert new menu access with error handling
+            try {
+                foreach ($selectedMenus as $menuId) {
+                    $db->insert('role_menu_access', [
+                        'role_id' => $roleId,
+                        'menu_id' => intval($menuId),
+                        'can_view' => 1
+                    ]);
+                }
+            } catch (Exception $e) {
+                // Table might not exist yet, continue silently
             }
 
             $auth->logActivity('updated', 'roles', $roleId, $oldRole, $data);

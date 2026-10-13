@@ -4,6 +4,7 @@ require_once 'includes/db.php';
 require_once 'includes/auth.php';
 
 $auth->requireLogin();
+$auth->requirePermission('locations.view', 'locations');
 $user = $auth->getCurrentUser();
 
 $db = Database::getInstance();
@@ -110,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle = 'Manajemen Lokasi';
 require_once 'includes/header.php';
 
-$auth->requirePermission('locations.view');
+$auth->requirePermission('locations.view', 'locations');
 
 $search = $_GET['search'] ?? '';
 

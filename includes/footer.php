@@ -9,7 +9,7 @@
     <div id="mobileSidebar" class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg z-50 transform -translate-x-full transition-transform md:hidden">
         <div class="p-6 border-b flex items-center justify-between">
             <div class="flex items-center space-x-3" title="Jawil Group">
-                <img src="includes/logo%20jawil.jpg" alt="Jawil Group" class="sidebar-brand-logo">
+                <img src="includes/jawil-logo-transparent.png" alt="Jawil Group" class="sidebar-brand-logo">
             </div>
             <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-800">
                 <i class="fas fa-times text-xl"></i>
@@ -61,6 +61,13 @@
             <a href="logs.php" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition">
                 <i class="fas fa-history w-5"></i>
                 <span>Aktivitas</span>
+            </a>
+            <?php endif; ?>
+
+            <?php if ($auth->hasPermission('settings.manage') || $auth->hasPermission('users.manage')): ?>
+            <a href="login_background.php" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition">
+                <i class="fas fa-image w-5"></i>
+                <span>Background Login</span>
             </a>
             <?php endif; ?>
         </nav>

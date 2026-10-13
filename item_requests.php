@@ -4,6 +4,7 @@ require_once 'includes/db.php';
 require_once 'includes/auth.php';
 
 $auth->requireLogin();
+$auth->requirePermission('items.view', 'item_requests');
 $user = $auth->getCurrentUser();
 $db = Database::getInstance();
 
@@ -189,6 +190,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Pengajuan Barang';
+
+// Check menu access for item_requests
+if (!$auth->hasMenuAccess('item_requests')) {
+    $_SESSION['error'] = 'Anda tidak memiliki akses ke menu Pengajuan Barang.';
+    header('Location: dashboard.php');
+    exit;
+}
+
 require_once 'includes/header.php';
 
 $statusFilter = $_GET['status'] ?? '';
@@ -498,7 +507,7 @@ function openReject(id, no) {
                 <th class="px-4 py-3 text-left">Kode Pegawai</th>
                 <th class="px-4 py-3 text-left">Keperluan</th>
                 <th class="px-4 py-3 text-right">Item / Qty</th>
-                <th class="px-4 py-3 text-right">Est. Nilai</th>
+                <?php if ($isAdmin): ?><th class="px-4 py-3 text-right">Est. Nilai</th><?php endif; ?>
                 <th class="px-4 py-3 text-center">Foto Bon</th>
                 <th class="px-4 py-3 text-center">Status</th>
                 <?php if ($isAdmin): ?><th class="px-4 py-3 text-center">Approval</th><?php endif; ?>
@@ -507,7 +516,7 @@ function openReject(id, no) {
         </thead>
         <tbody class="divide-y divide-gray-100">
         <?php if (empty($requests)): ?>
-            <tr><td colspan="<?= $isAdmin ? 10 : 9 ?>" class="px-6 py-12 text-center text-gray-500"><i class="fas fa-inbox text-4xl mb-2 text-gray-300"></i><p>Belum ada data pengajuan.</p></td></tr>
+            <tr><td colspan="<?= $isAdmin ? 10 : 8 ?>" class="px-6 py-12 text-center text-gray-500"><i class="fas fa-inbox text-4xl mb-2 text-gray-300"></i><p>Belum ada data pengajuan.</p></td></tr>
         <?php else: ?>
             <?php foreach ($requests as $r):
                 $items = json_decode($r['item_details'], true) ?: [];
@@ -530,7 +539,7 @@ function openReject(id, no) {
                     <span class="font-bold text-gray-800"><?= count($items) ?> jenis</span>
                     <div class="text-xs text-gray-500">/ <?= (int)$r['total_items'] ?> unit</div>
                 </td>
-                <td class="px-4 py-3 text-right font-semibold text-purple-700 whitespace-nowrap">Rp <?= number_format($r['total_amount'], 0, ',', '.') ?></td>
+                <?php if ($isAdmin): ?><td class="px-4 py-3 text-right font-semibold text-purple-700 whitespace-nowrap">Rp <?= number_format($r['total_amount'], 0, ',', '.') ?></td><?php endif; ?>
                 <td class="px-4 py-3 text-center">
                     <?php if ($r['photo_bon']): ?>
                         <?php $ext = strtolower(pathinfo($r['photo_bon'], PATHINFO_EXTENSION)); ?>

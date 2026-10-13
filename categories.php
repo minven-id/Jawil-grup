@@ -4,6 +4,7 @@ require_once 'includes/db.php';
 require_once 'includes/auth.php';
 
 $auth->requireLogin();
+$auth->requirePermission('categories.view', 'categories');
 $user = $auth->getCurrentUser();
 
 $db = Database::getInstance();
@@ -79,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle = 'Manajemen Kategori';
 require_once 'includes/header.php';
 
-$auth->requirePermission('categories.view');
+$auth->requirePermission('categories.view', 'categories');
 
 $search = $_GET['search'] ?? '';
 

@@ -2,7 +2,7 @@
 $pageTitle = 'Stok Keluar';
 require_once 'includes/header.php';
 
-$auth->requirePermission('items.view');
+$auth->requirePermission('items.view', 'items');
 
 $db = Database::getInstance();
 

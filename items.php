@@ -4,7 +4,9 @@ require_once 'includes/db.php';
 require_once 'includes/auth.php';
 
 $auth->requireLogin();
+$auth->requirePermission('items.view', 'items');
 $user = $auth->getCurrentUser();
+$isAdmin = in_array((int)$user['role_id'], [1, 2], true);
 
 $db = Database::getInstance();
 
@@ -404,7 +406,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle = 'Manajemen Barang';
 require_once 'includes/header.php';
 
-$auth->requirePermission('items.view');
+$auth->requirePermission('items.view', 'items');
 
 $search = $_GET['search'] ?? '';
 $categoryFilter = $_GET['category'] ?? '';
@@ -486,7 +488,7 @@ if (isset($_GET['edit'])) {
 </div>
 
 <!-- Summary Stats -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-2 <?php echo $isAdmin ? 'xl:grid-cols-3' : ''; ?> gap-6 mb-6">
     <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl shadow-sm p-6 text-white">
         <div class="flex items-center justify-between">
             <div>
@@ -509,6 +511,7 @@ if (isset($_GET['edit'])) {
             </div>
         </div>
     </div>
+    <?php if ($isAdmin): ?>
     <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-sm p-6 text-white">
         <div class="flex items-center justify-between">
             <div>
@@ -520,6 +523,7 @@ if (isset($_GET['edit'])) {
             </div>
         </div>
     </div>
+    <?php endif; ?>
 </div>
 
 <!-- Filters -->
@@ -574,7 +578,9 @@ if (isset($_GET['edit'])) {
                     <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Merk</th>
                     <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
                     <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
+                    <?php if ($isAdmin): ?>
                     <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Beli Satuan</th>
+                    <?php endif; ?>
                     <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lokasi</th>
                     <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Foto Bon</th>
                     <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -614,9 +620,11 @@ if (isset($_GET['edit'])) {
                                     <?php echo $item['quantity']; ?> <?php echo htmlspecialchars($item['unit']); ?>
                                 </span>
                             </td>
+                            <?php if ($isAdmin): ?>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <?php echo $item['purchase_price'] ? 'Rp ' . number_format($item['purchase_price'], 0, ',', '.') : '-'; ?>
                             </td>
+                            <?php endif; ?>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <?php if ($item['location_name']): ?>
                                     <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
@@ -683,7 +691,7 @@ if (isset($_GET['edit'])) {
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="9" class="px-6 py-12 text-center text-gray-500">
+                        <td colspan="<?php echo 8 + ($isAdmin ? 1 : 0); ?>" class="px-6 py-12 text-center text-gray-500">
                             <i class="fas fa-box-open text-4xl mb-4"></i>
                             <p>Tidak ada barang ditemukan</p>
                         </td>

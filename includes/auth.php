@@ -83,10 +83,27 @@ class Auth {
         return in_array($permission, $permissions) || in_array('*', $permissions);
     }
 
-    public function requirePermission($permission) {
+    public function canViewDocuments() {
+        $roleName = $_SESSION['role_name'] ?? '';
+        return $this->hasPermission('documents.view') || in_array($roleName, ['Super Admin', 'Admin', 'Staff'], true);
+    }
+
+    public function canManageDocuments() {
+        $roleName = $_SESSION['role_name'] ?? '';
+        return $this->hasPermission('documents.manage') || in_array($roleName, ['Super Admin', 'Admin'], true);
+    }
+
+    public function requirePermission($permission, $menuName = null) {
         $this->requireLogin();
         
-        if (!$this->hasPermission($permission)) {
+        // Check permission OR menu access (if menuName provided)
+        $hasAccess = $this->hasPermission($permission);
+        
+        if ($menuName !== null) {
+            $hasAccess = $hasAccess || $this->hasMenuAccess($menuName);
+        }
+        
+        if (!$hasAccess) {
             if (!headers_sent()) {
                 $_SESSION['error'] = 'You do not have permission to access this page.';
                 header('Location: dashboard.php');
@@ -146,14 +163,19 @@ class Auth {
         $roleId = $_SESSION['role_id'];
         $db = Database::getInstance();
 
-        $sql = "SELECT rma.can_view 
-                FROM role_menu_access rma
-                JOIN menus m ON rma.menu_id = m.id
-                WHERE rma.role_id = ? AND m.menu_name = ? AND rma.can_view = 1";
+        try {
+            $sql = "SELECT rma.can_view 
+                    FROM role_menu_access rma
+                    JOIN menus m ON rma.menu_id = m.id
+                    WHERE rma.role_id = ? AND m.menu_name = ? AND rma.can_view = 1";
 
-        $result = $db->fetchOne($sql, [$roleId, $menuName]);
+            $result = $db->fetchOne($sql, [$roleId, $menuName]);
 
-        return $result !== false;
+            return $result !== false;
+        } catch (Exception $e) {
+            // Fallback: if role_menu_access table doesn't exist, allow access for Super Admin
+            return $this->isSuperAdmin();
+        }
     }
 
     public function getAccessibleMenus() {
@@ -171,18 +193,35 @@ class Auth {
                     WHERE rma.role_id = ? AND rma.can_view = 1 AND m.is_active = 1
                     ORDER BY m.menu_order";
 
-            return $db->fetchAll($sql, [$roleId]);
+            $menus = $db->fetchAll($sql, [$roleId]);
+            
+            // If no menus found and user is Super Admin, return all active menus
+            if (empty($menus) && $this->isSuperAdmin()) {
+                return $db->fetchAll("SELECT * FROM menus WHERE is_active = 1 ORDER BY menu_order");
+            }
+            
+            return $menus;
         } catch (Exception $e) {
-            // Fallback to default menus if tables don't exist yet
-            return [
-                ['menu_name' => 'dashboard', 'menu_label' => 'Dashboard', 'menu_icon' => 'fa-home', 'menu_url' => 'dashboard.php'],
-                ['menu_name' => 'items', 'menu_label' => 'Barang', 'menu_icon' => 'fa-box', 'menu_url' => 'items.php'],
-                ['menu_name' => 'categories', 'menu_label' => 'Kategori', 'menu_icon' => 'fa-tags', 'menu_url' => 'categories.php'],
-                ['menu_name' => 'locations', 'menu_label' => 'Lokasi', 'menu_icon' => 'fa-map-marker-alt', 'menu_url' => 'locations.php'],
-                ['menu_name' => 'roles', 'menu_label' => 'Role', 'menu_icon' => 'fa-user-shield', 'menu_url' => 'roles.php'],
-                ['menu_name' => 'users', 'menu_label' => 'Pengguna', 'menu_icon' => 'fa-users', 'menu_url' => 'users.php'],
-                ['menu_name' => 'logs', 'menu_label' => 'Aktivitas', 'menu_icon' => 'fa-history', 'menu_url' => 'logs.php']
-            ];
+            // Fallback: if tables don't exist yet, return all menus for Super Admin
+            if ($this->isSuperAdmin()) {
+                try {
+                    return $db->fetchAll("SELECT * FROM menus WHERE is_active = 1 ORDER BY menu_order");
+                } catch (Exception $e2) {
+                    // Final fallback to hardcoded menus
+                    return [
+                        ['menu_name' => 'dashboard', 'menu_label' => 'Dashboard', 'menu_icon' => 'fa-home', 'menu_url' => 'dashboard.php'],
+                        ['menu_name' => 'items', 'menu_label' => 'Barang', 'menu_icon' => 'fa-box', 'menu_url' => 'items.php'],
+                        ['menu_name' => 'categories', 'menu_label' => 'Kategori', 'menu_icon' => 'fa-tags', 'menu_url' => 'categories.php'],
+                        ['menu_name' => 'locations', 'menu_label' => 'Lokasi', 'menu_icon' => 'fa-map-marker-alt', 'menu_url' => 'locations.php'],
+                        ['menu_name' => 'roles', 'menu_label' => 'Role', 'menu_icon' => 'fa-user-shield', 'menu_url' => 'roles.php'],
+                        ['menu_name' => 'users', 'menu_label' => 'Pengguna', 'menu_icon' => 'fa-users', 'menu_url' => 'users.php'],
+                        ['menu_name' => 'logs', 'menu_label' => 'Aktivitas', 'menu_icon' => 'fa-history', 'menu_url' => 'logs.php']
+                    ];
+                }
+            }
+            
+            // For non-super admins, return empty array if tables don't exist
+            return [];
         }
     }
 }

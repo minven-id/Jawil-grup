@@ -10,6 +10,25 @@ if ($auth->isLoggedIn()) {
 
 $error = '';
 
+// Use the admin-uploaded background when available, otherwise use the bundled image.
+$loginBackgroundFile = null;
+foreach (['jpg', 'jpeg', 'png', 'webp', 'gif'] as $backgroundExtension) {
+    $candidate = __DIR__ . '/includes/login-background.' . $backgroundExtension;
+    if (is_file($candidate)) {
+        $loginBackgroundFile = $candidate;
+        break;
+    }
+}
+
+$loginBackgroundUrl = 'includes/' . rawurlencode('WhatsApp Image 2026-09-13 at 01.06.56.jpeg');
+if ($loginBackgroundFile) {
+    $loginBackgroundUrl = 'includes/' . rawurlencode(basename($loginBackgroundFile));
+    $backgroundVersion = @filemtime($loginBackgroundFile);
+    if ($backgroundVersion) {
+        $loginBackgroundUrl .= '?v=' . $backgroundVersion;
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $employeeId = trim($_POST['employee_id'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -50,10 +69,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             min-height: 100vh;
             color: var(--ink);
             font-family: Georgia, "Times New Roman", serif;
-            background:
+            background-color: #111111;
+            background-image:
                 linear-gradient(115deg, rgba(17, 17, 17, .38), rgba(116, 31, 43, .22)),
-                url('includes/jawil.jpg') left bottom / cover no-repeat,
-                linear-gradient(135deg, #111111, var(--maroon));
+                url(<?php echo json_encode($loginBackgroundUrl, JSON_UNESCAPED_SLASHES); ?>);
+            background-position: center, center;
+            background-repeat: no-repeat, no-repeat;
+            /* Cover fills the complete login screen like the previous layout. */
+            background-size: cover, cover;
         }
 
         .login-shell {
@@ -207,8 +230,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="login-shell">
         <section class="brand-panel" aria-label="Jawil Group">
-            <?php if (file_exists(__DIR__ . '/includes/logo jawil.jpg')): ?>
-                <img src="includes/logo%20jawil.jpg" alt="Jawil Group" class="brand-logo">
+            <?php if (file_exists(__DIR__ . '/includes/jawil-logo-transparent.png')): ?>
+                <img src="includes/jawil-logo-transparent.png" alt="Jawil Group" class="brand-logo">
             <?php else: ?>
                 <div class="brand-name">Jawil</div>
                 <div class="brand-subtitle">GROUP</div>
@@ -261,8 +284,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <div class="mt-2 flex justify-center gap-4 font-sans text-[10px] text-gray-700 underline">
-            <a href="#">Forgot Password?</a>
-            <a href="#">Need an account?</a>
+            <a href="forgot_password.php">Lupa Password?</a>
+            <a href="request_account.php">Butuh Akun?</a>
         </div>
     </div>
         <div class="font-sans text-[10px] tracking-wide text-white/80">powered by <strong class="font-semibold text-white">Minven.Id</strong></div>

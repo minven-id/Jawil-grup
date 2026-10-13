@@ -2,11 +2,12 @@
 $pageTitle = 'Monitoring Barang';
 require_once 'includes/header.php';
 
-$auth->requirePermission('items.view');
+$auth->requirePermission('items.view', 'items');
 
 $db = Database::getInstance();
+$isAdmin = in_array((int)$user['role_id'], [1, 2], true);
 
-$search = $_GET['search'] ?? '';
+$search = $_GET['search'] ?? ''; 
 $categoryFilter = $_GET['category'] ?? '';
 $locationFilter = $_GET['location'] ?? '';
 
@@ -56,7 +57,7 @@ $locations = $db->fetchAll("SELECT * FROM locations ORDER BY location_name");
 <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
     <div>
         <h2 class="text-2xl font-bold text-gray-800">Monitoring Barang</h2>
-        <p class="text-gray-600">Pantau stok, harga beli, dan nilai inventaris barang</p>
+        <p class="text-gray-600"><?php echo $isAdmin ? 'Pantau stok, harga beli, dan nilai inventaris barang' : 'Pantau stok dan status inventaris barang'; ?></p>
     </div>
     <div class="flex gap-2">
         <?php if ($auth->hasPermission('items.manage')): ?>
@@ -72,7 +73,7 @@ $locations = $db->fetchAll("SELECT * FROM locations ORDER BY location_name");
     </div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 <?php echo $isAdmin ? 'xl:grid-cols-3' : ''; ?> gap-6 mb-8">
     <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-indigo-500">
         <div class="flex items-center justify-between">
             <div>
@@ -97,6 +98,7 @@ $locations = $db->fetchAll("SELECT * FROM locations ORDER BY location_name");
         </div>
     </div>
 
+    <?php if ($isAdmin): ?>
     <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
         <div class="flex items-center justify-between">
             <div>
@@ -108,6 +110,7 @@ $locations = $db->fetchAll("SELECT * FROM locations ORDER BY location_name");
             </div>
         </div>
     </div>
+    <?php endif; ?>
 </div>
 
 <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
@@ -162,8 +165,10 @@ $locations = $db->fetchAll("SELECT * FROM locations ORDER BY location_name");
                     <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Kategori</th>
                     <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
                     <th class="px-6 py-4 text-right text-xs font-medium text-white uppercase tracking-wider">Qty Barang</th>
+                    <?php if ($isAdmin): ?>
                     <th class="px-6 py-4 text-right text-xs font-medium text-white uppercase tracking-wider">Harga Beli Satuan</th>
                     <th class="px-6 py-4 text-right text-xs font-medium text-white uppercase tracking-wider">Total (Qty x Harga)</th>
+                    <?php endif; ?>
                     <?php if ($auth->hasPermission('items.manage')): ?>
                     <th class="px-6 py-4 text-center text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
                     <?php endif; ?>
@@ -241,12 +246,14 @@ $locations = $db->fetchAll("SELECT * FROM locations ORDER BY location_name");
                                     <?php echo number_format($item['quantity']); ?> <?php echo htmlspecialchars($item['unit']); ?>
                                 </span>
                             </td>
+                            <?php if ($isAdmin): ?>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
                                 <?php echo $item['purchase_price'] ? 'Rp ' . number_format($item['purchase_price'], 0, ',', '.') : '-'; ?>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">
                                 Rp <?php echo number_format($itemTotal, 0, ',', '.'); ?>
                             </td>
+                            <?php endif; ?>
                             <?php if ($auth->hasPermission('items.manage')): ?>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                 <select onchange="updateStatus(<?php echo $item['id']; ?>, this.value)" class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
@@ -262,7 +269,7 @@ $locations = $db->fetchAll("SELECT * FROM locations ORDER BY location_name");
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="<?php echo $auth->hasPermission('items.manage') ? 10 : 9; ?>" class="px-6 py-12 text-center text-gray-500">
+                        <td colspan="<?php echo 7 + ($isAdmin ? 2 : 0) + ($auth->hasPermission('items.manage') ? 1 : 0); ?>" class="px-6 py-12 text-center text-gray-500">
                             <i class="fas fa-box-open text-4xl mb-4 text-gray-300"></i>
                             <p>Tidak ada barang ditemukan</p>
                         </td>
@@ -272,7 +279,7 @@ $locations = $db->fetchAll("SELECT * FROM locations ORDER BY location_name");
             <?php if (count($items) > 0): ?>
                 <tfoot class="bg-gray-50 border-t-2 border-gray-300">
                     <tr>
-                        <td colspan="<?php echo $auth->hasPermission('items.manage') ? 7 : 6; ?>" class="px-6 py-4 text-sm font-bold text-gray-800 text-right uppercase tracking-wider">
+                        <td colspan="<?php echo 6 + ($auth->hasPermission('items.manage') ? 1 : 0); ?>" class="px-6 py-4 text-sm font-bold text-gray-800 text-right uppercase tracking-wider">
                             <i class="fas fa-calculator mr-2"></i>TOTAL SEMUA BARANG:
                         </td>
                         <td class="px-6 py-4 text-right">
@@ -280,6 +287,7 @@ $locations = $db->fetchAll("SELECT * FROM locations ORDER BY location_name");
                                 <?php echo number_format($totalQuantity); ?> unit
                             </span>
                         </td>
+                        <?php if ($isAdmin): ?>
                         <td class="px-6 py-4 text-right text-sm text-gray-500">
                             -
                         </td>
@@ -288,6 +296,7 @@ $locations = $db->fetchAll("SELECT * FROM locations ORDER BY location_name");
                                 Rp <?php echo number_format($grandTotal, 0, ',', '.'); ?>
                             </span>
                         </td>
+                        <?php endif; ?>
                     </tr>
                 </tfoot>
             <?php endif; ?>
